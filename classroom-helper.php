@@ -41,6 +41,7 @@ function generateSchoolbook($data) {
             }
 
             // Build the student array
+            
             $student[0] = $name;
             $student[1] = $gender;
             $student[2] = $subjects;
