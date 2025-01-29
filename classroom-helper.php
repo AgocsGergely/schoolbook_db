@@ -5,7 +5,6 @@ require_once "classroom.php";
 function getData(){
     return DATA;
 }
-
 function generateSchoolbook($data) {
     /*if (isset($_SESSION["schoolBook"])) {
         return $_SESSION["schoolBook"];

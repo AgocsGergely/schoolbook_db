@@ -1,5 +1,5 @@
 <?php
-
+//phpstorm
 define('NAME', 0);
 define('GENDER', 1);
 define('SUBJECTS', 2);
@@ -561,6 +561,7 @@ function showClassAverage($book){
 
     
 }
+
 //TOP3
 if(isset($_GET['queries']) && $_GET['queries'] === 'lösszes'){
     $tomb = array_slice(findTop3Overall($book,"Összes"), 0, 3);
