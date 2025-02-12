@@ -1,0 +1,126 @@
+/* Alapértelmezett gomb stílus */
+button {
+    background-color: #4CAF50; /* Zöld háttérszín */
+    border: none; /* Nincs keret */
+    color: white; /* Fehér szöveg */
+    padding: 15px 32px; /* Belső margók */
+    text-align: center; /* Szöveg igazítása középre */
+    text-decoration: none; /* Nincs aláhúzás */
+    display: inline-block; /* Inline blokk elem */
+    font-size: 16px; /* Betűméret */
+    margin: 4px 2px; /* Külső margók */
+    cursor: pointer; /* Mutató kurzor */
+    border-radius: 8px; /* Lekerekített sarkok */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Áttűnés az új háttérszínre és árnyékra */
+}
+
+/* Gomb hover stílus */
+button:hover {
+    background-color: #45a049; /* Sötétebb zöld háttérszín hover állapotban */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Árnyék hover állapotban */
+}
+
+/* Gomb aktív stílus */
+button:active {
+    background-color: #3e8e41; /* Még sötétebb zöld háttérszín aktív állapotban */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Kisebb árnyék aktív állapotban */
+    transform: translateY(2px); /* Kissé lefelé mozdul */
+}
+
+/* Gombok középre helyezése */
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh; /* Teljes magasságú konténer */
+}
+
+/* Különböző színű gombok */
+button.primary {
+    background-color: #007BFF; /* Kék háttérszín */
+}
+
+button.secondary {
+    background-color: #6C757D; /* Szürke háttérszín */
+}
+
+button.success {
+    background-color: #28A745; /* Sikeres zöld háttérszín */
+}
+
+button.danger {
+    background-color: #DC3545; /* Veszélyes piros háttérszín */
+}
+
+button.warning {
+    background-color: #FFC107; /* Figyelmeztető sárga háttérszín */
+}
+
+button.info {
+    background-color: #17A2B8; /* Információs kék háttérszín */
+}
+
+button.light {
+    background-color: #F8F9FA; /* Világos háttérszín */
+    color: black; /* Fekete szöveg */
+}
+
+button.dark {
+    background-color: #343A40; /* Sötét háttérszín */
+}
+
+/* Reszponzív stílusok */
+@media (max-width: 768px) {
+    .button-container {
+        height: auto; /* Automatikus magasság kisebb képernyőknél */
+        padding: 20px; /* Extra belső margó kisebb képernyőknél */
+    }
+}
+
+/* Táblázat stílus */
+table {
+    width: 50%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+td {
+    font-size: 16px;
+    color: #333;
+}
+
+/* Reszponzív stílusok */
+@media (max-width: 600px) {
+    table {
+        width: 100%;
+    }
+
+    th, td {
+        padding: 10px;
+        font-size: 14px;
+    }
+}

@@ -1,6 +1,6 @@
 <?php
 require_once "classroom-data.php";
-echo"hello";
+
 // Database tulajdonságok:
 $servername = "localhost";
 $username = "root";
@@ -102,14 +102,12 @@ if ($conn->query($sql) === TRUE) {
 
 function HTMLbody(){
     echo "<body>";
-    echo "dsadasdsa";
     echo "<form name='nav' method='post' action=''>
-    <div>
-            <button type='submit' name='install' value='1'>Install now!</button>
-            </div>
-            <div>
-            <button type='submit' name='Refresh' value='1'>Upload now!</button>
-            </div>
+                <div>
+                    <div class='button-container'>
+                    <button type='submit' name='install' value='1' class='primary'>Adatbázis létrehozása!</button>
+                    <button type='submit' name='Refresh' value='1' class='secondary'>Adatbázis feltöltése!</button>
+                </div>
             </form>
     ";
     echo "</body>";
@@ -122,7 +120,7 @@ function htmlHead(){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Osztálynapló</title>
-    <link rel="stylesheet" href="bootstrap.css">
+    <link rel="stylesheet" href="style.css">
 </head>';
 }
 htmlHead();
@@ -160,7 +158,7 @@ function deleteDatabase($conn) {
 
     // Többutasításos lekérdezés futtatása
     if ($conn->multi_query($sql)) {
-        echo "<br>Az összes tábla sikeresen törölve lett!";
+        echo "<br><p style='text-align:center;'>Az összes tábla sikeresen törölve lett az adatbázis létrehozása előtt!</p>";
         // Minden utasítás feldolgozása
         while ($conn->next_result()) {
             // Kötelező, hogy minden eredményt feldolgozzunk
@@ -173,12 +171,19 @@ function deleteDatabase($conn) {
 
 
 function generateSubjects($data, $conn) {
+    echo "<table>";
+    echo '<thead>
+    <tr>
+        <th>Egyetlen Oszlop</th>
+    </tr>
+</thead>
+<tbody>';
     $stmt = $conn->prepare("INSERT INTO Subjects (name) VALUES (?)");
     
     foreach ($data['subjects'] as $subject) {
         $stmt->bind_param("s", $subject); // "s" = string
         if ($stmt->execute()) {
-            echo "<br>'$subject' sikeresen hozzáadva a Subjects táblához!";
+            echo "<tr><td>'$subject' sikeresen hozzáadva a Subjects táblához!</td></tr>";
         } else {
             echo "Hiba az adat beszúrásakor: " . $stmt->error;
         }
@@ -191,6 +196,7 @@ function generateSubjects($data, $conn) {
 
 /*Classes generálása */
 function generateClasses($data, $conn) {
+    
     // Előkészített SQL lekérdezés
     $stmt = $conn->prepare("INSERT INTO Classes (code) VALUES (?)");
 
@@ -198,7 +204,7 @@ function generateClasses($data, $conn) {
         // Paraméter bekötése
         $stmt->bind_param("s", $class); // "s" = string típus
         if ($stmt->execute()) {
-            echo "<br>'$class' sikeresen hozzáadva a Classes táblához!";
+            echo "<tr><td>'$class' sikeresen hozzáadva a Classes táblához!</td></tr>";
         } else {
             echo "Hiba a beszúrás során: " . $stmt->error;
         }
@@ -234,7 +240,7 @@ function generateSchoolbook($data,$conn) {
             $stmt->bind_param("sss", $name, $gender, $class); /* "sss" == string,string,string */
             // Lekérdezés végrehajtása
             if ($stmt->execute()) {
-                echo "<br>'$name' sikeresen hozzáadva a Students táblához!";
+                echo "<tr><td>'$name' sikeresen hozzáadva a Students táblához!</td></tr>";
             } else {
                 echo "Hiba a student beszúrásakor: " . $stmt->error;
             }
@@ -262,7 +268,7 @@ function generateSchoolbook($data,$conn) {
 
                     // Lekérdezés végrehajtása
                     if ($stmt->execute()) {
-                        echo "<br>'$name' diák jegye sikeresen hozzáadva!";
+                        echo "<tr><td>'$name' diák jegye sikeresen hozzáadva!</td></tr>";
                     } else {
                         echo "Hiba a jegy beszúrásakor: " . $stmt->error;
                     }
@@ -272,6 +278,7 @@ function generateSchoolbook($data,$conn) {
                     
                 }
             }
+            //echo "</tbody></table>";
         }
     }
 }
