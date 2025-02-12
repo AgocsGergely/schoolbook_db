@@ -89,7 +89,7 @@ if (isset($_REQUEST["install"])) {
     /*Classes tábla*/
     createTable($conn,"Classes","id int(5) NOT NULL AUTO_INCREMENT,
                                                         code varchar(3) DEFAULT NULL,
-                                                        year DATE DEFAULT NULL,
+                                                        year int(4) DEFAULT NULL,
                                                         PRIMARY KEY (id)");
     /*Students tábla*/
     createTable($conn,"Students","id int(11) NOT NULL AUTO_INCREMENT,
@@ -169,11 +169,12 @@ function generateSubjects($data, $conn) {
 function generateClasses($data, $conn) {
     
     // Előkészített SQL lekérdezés
-    $stmt = $conn->prepare("INSERT INTO Classes (code) VALUES (?)");
+    $stmt = $conn->prepare("INSERT INTO Classes (code, year) VALUES (?, ?)");
 
     foreach ($data['classes'] as $class) {
         // Paraméter bekötése
-        $stmt->bind_param("s", $class); // "s" = string típus
+        $year = 2025;
+        $stmt->bind_param("si", $class, $year); // "s" = string típus
         if ($stmt->execute()) {
             echo "<tr><td>'$class' sikeresen hozzáadva a Classes táblához!</td></tr>";
         } else {
