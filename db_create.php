@@ -7,11 +7,18 @@ $username = "root";
 $password = "";
 
 // Create
+try{
 $conn = new mysqli($servername, $username, $password);
+
+
 
 // Check 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
+}
+}
+catch(Exception $e){
+    echo "Nem lehet csatlakozni az adatbázishoz!!!!!!!!!!!!!!!!";
 }
 
 // CR Scriptek:
@@ -28,78 +35,21 @@ function databaseCreate($conn){
         echo "Error creating database: " . $conn->error;
 }
 }
-
-function createGrades($conn) {
-    $sql = "
-        CREATE TABLE IF NOT EXISTS schoolbook.grades (
-  id int(4) NOT NULL AUTO_INCREMENT,
-  student_id int(16) DEFAULT NULL,
-  subject_id int(16) DEFAULT NULL,
-  grade int(4) NOT NULL,
-  date date DEFAULT NULL,
-  PRIMARY KEY (id)
-)
-ENGINE = INNODB;
-    ";
-
+function createTable($conn,$tableName,$body){
+    $sql  = sprintf('
+    
+    CREATE TABLE IF NOT EXISTS schoolbook.%s (
+      %s
+    )
+    ENGINE = INNODB;
+    ',$tableName,$body);
     if ($conn->query($sql) === TRUE) {
-        echo "<br>Grades tábla sikeresen létrehozva!";
+        echo "<br> $tableName tábla sikeresen létrehozva!";
     } else {
         echo "Error creating database: " . $conn->error;
-}
+    }
 }
 /*Subjects tábla*/
-function createSubjects($conn){
-    $sql = '
-    
-CREATE TABLE IF NOT EXISTS schoolbook.Subjects (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  name varchar(32) DEFAULT NULL,
-  PRIMARY KEY (id)
-)
-ENGINE = INNODB;
-';
-if ($conn->query($sql) === TRUE) {
-    echo "<br>Subjects tábla sikeresen létrehozva!";
-} else {
-    echo "Error creating database: " . $conn->error;
-}
-}
-/*Classes tábla*/
-function createClasses($conn){
-    $sql = '
-    CREATE TABLE IF NOT EXISTS schoolbook.Classes (
-  id int(5) NOT NULL AUTO_INCREMENT,
-  code varchar(3) DEFAULT NULL,
-  PRIMARY KEY (id)
-)
-ENGINE = INNODB;
-';
-/*year int(4) DEFAULT NULL,*/
-if ($conn->query($sql) === TRUE) {
-    echo "<br>Classes tábla sikeresen létrehozva!";
-} else {
-    echo "Error creating database: " . $conn->error;
-}
-}
-/*Students tábla*/
-function createStudents($conn){
-    $sql = '
-    CREATE TABLE IF NOT EXISTS schoolbook.Studetns (
-  id int(11) NOT NULL AUTO_INCREMENT,
-  name varchar(50) DEFAULT NULL,
-  gender int(11) DEFAULT NULL,
-  class_id int(11) DEFAULT NULL,
-  PRIMARY KEY (id)
-)
-ENGINE = INNODB;';
-if ($conn->query($sql) === TRUE) {
-    echo "<br>Students tábla sikeresen létrehozva!";
-} else {
-    echo "Error creating database: " . $conn->error;
-}
-} 
-
 function HTMLbody(){
     echo "<body>";
     echo "<form name='nav' method='post' action=''>
@@ -125,16 +75,36 @@ function htmlHead(){
 }
 htmlHead();
 HTMLbody();
-
+/*Táblák létrehozása*/
 if (isset($_REQUEST["install"])) {
+    
     databaseCreate($conn);
-    createGrades($conn);
-    createClasses($conn);
-    createStudents($conn);
-    createSubjects($conn);
+    /*Grades tábla*/
+    createTable($conn,"grades","id int(4) NOT NULL AUTO_INCREMENT,
+                                                        student_id int(16) DEFAULT NULL,
+                                                        subject_id int(16) DEFAULT NULL,
+                                                        grade int(4) NOT NULL,
+                                                        date date DEFAULT NULL,
+                                                        PRIMARY KEY (id)");
+    /*Classes tábla*/
+    createTable($conn,"Classes","id int(5) NOT NULL AUTO_INCREMENT,
+                                                        code varchar(3) DEFAULT NULL,
+                                                        year DATE DEFAULT NULL,
+                                                        PRIMARY KEY (id)");
+    /*Students tábla*/
+    createTable($conn,"Students","id int(11) NOT NULL AUTO_INCREMENT,
+                                                        name varchar(50) DEFAULT NULL,
+                                                        gender int(11) DEFAULT NULL,
+                                                        class_id int(11) DEFAULT NULL,
+                                                        PRIMARY KEY (id)");
+    /*Subjects tábla*/
+    createTable($conn,"Subjects","id int(11) NOT NULL AUTO_INCREMENT,
+                                                        name varchar(32) DEFAULT NULL,
+                                                        PRIMARY KEY (id)");
 }
 if (isset($_REQUEST["Refresh"])) {
     deleteDatabase($conn);
+    tableHeader();
     generateSubjects(DATA,$conn);
     generateClasses(DATA,$conn);
     generateSchoolbook(DATA,$conn);
@@ -168,9 +138,7 @@ function deleteDatabase($conn) {
     }
 }
 
-
-
-function generateSubjects($data, $conn) {
+function tableHeader(){
     echo "<table>";
     echo '<thead>
     <tr>
@@ -178,6 +146,11 @@ function generateSubjects($data, $conn) {
     </tr>
 </thead>
 <tbody>';
+}
+
+
+function generateSubjects($data, $conn) {
+    
     $stmt = $conn->prepare("INSERT INTO Subjects (name) VALUES (?)");
     
     foreach ($data['subjects'] as $subject) {
@@ -191,8 +164,6 @@ function generateSubjects($data, $conn) {
     
     $stmt->close();
 }
-
-
 
 /*Classes generálása */
 function generateClasses($data, $conn) {
