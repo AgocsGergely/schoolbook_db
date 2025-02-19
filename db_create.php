@@ -161,26 +161,28 @@ function generateSubjects($data, $conn) {
             echo "Hiba az adat beszúrásakor: " . $stmt->error;
         }
     }
+
     
     $stmt->close();
 }
 
 /*Classes generálása */
 function generateClasses($data, $conn) {
-    
+    for($i = 2023; $i < 2026; $i++){
     // Előkészített SQL lekérdezés
     $stmt = $conn->prepare("INSERT INTO Classes (code, year) VALUES (?, ?)");
 
     foreach ($data['classes'] as $class) {
         // Paraméter bekötése
-        $year = 2025;
-        $stmt->bind_param("si", $class, $year); // "s" = string típus
+        
+        $stmt->bind_param("si", $class, $i); // "s" = string típus
         if ($stmt->execute()) {
             echo "<tr><td>'$class' sikeresen hozzáadva a Classes táblához!</td></tr>";
         } else {
             echo "Hiba a beszúrás során: " . $stmt->error;
         }
     }
+}
 
     // Előkészített lekérdezés lezárása
     $stmt->close();
@@ -189,6 +191,9 @@ function generateClasses($data, $conn) {
 
 /*Diákok létrehozása*/
 function generateSchoolbook($data,$conn) {
+    for($k = 2023; $k < 2026; $k++){
+
+    
     foreach ($data["classes"] as $class) {
 
         $numberOfPeople = rand(10, 15); // Random number of students per class
@@ -205,11 +210,11 @@ function generateSchoolbook($data,$conn) {
 
             $stmt = $conn->prepare("
                 INSERT INTO students (name, gender, class_id)
-                VALUES (?, ?, (SELECT id FROM classes WHERE code = ?))
+                VALUES (?, ?, (SELECT id FROM classes WHERE code = ? AND year = ?))
             ");
 
             // Paraméterek bekötése
-            $stmt->bind_param("sss", $name, $gender, $class); /* "sss" == string,string,string */
+            $stmt->bind_param("sssi", $name, $gender, $class, $k); /* "sss" == string,string,string */
             // Lekérdezés végrehajtása
             if ($stmt->execute()) {
                 echo "<tr><td>'$name' sikeresen hozzáadva a Students táblához!</td></tr>";
@@ -252,6 +257,7 @@ function generateSchoolbook($data,$conn) {
             }
             //echo "</tbody></table>";
         }
+    }
     }
 }
 
