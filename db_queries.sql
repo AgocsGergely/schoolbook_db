@@ -54,10 +54,11 @@ ORDER by s.name
 
 /*Jelenítse meg az egyes osztályok átlagát tantárgyanként.*/
 
-SELECT c.year, c.code,AVG(g.grade) from grades g
+SELECT c.year, c.code,su.name, AVG(g.grade) from grades g
 JOIN students s ON s.id = g.student_id
 JOIN classes c ON s.class_id = c.id
-GROUP BY s.class_id
+JOIN subjects su ON su.id = g.subject_id
+GROUP BY s.class_id, g.subject_id
 
 /*Jelenítse meg az iskola 10 legjobb tanulóját az elért átlaguk sorrendjében a kiválasztott évben*/
 
