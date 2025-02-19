@@ -233,7 +233,14 @@ function generateSchoolbook($data,$conn) {
                         VALUES (
                             (SELECT id FROM students WHERE name = ? LIMIT 1),
                             (SELECT id FROM Subjects WHERE name = ? LIMIT 1),
-                            ?, NOW()
+                            ?,
+                            DATE_FORMAT(
+                                CONCAT(
+                                    ?, '-', 
+                                    LPAD(FLOOR(1 + (RAND() * 12)), 2, '0'), '-', 
+                                    LPAD(FLOOR(1 + (RAND() * 28)), 2, '0')
+                                ), '%Y-%m-%d'
+                            )
                         )
                     ");
 
@@ -241,7 +248,7 @@ function generateSchoolbook($data,$conn) {
                     $grade = rand(1, 5);
 
                     // Paraméterek bekötése
-                    $stmt->bind_param("ssi", $name, $subject, $grade);
+                    $stmt->bind_param("ssii", $name, $subject, $grade, $k);
 
                     // Lekérdezés végrehajtása
                     if ($stmt->execute()) {
