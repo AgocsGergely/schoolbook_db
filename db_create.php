@@ -2,6 +2,7 @@
 require_once "classroom-data.php";
 
 // Database tulajdonságok:
+global $servername,$username,$password;
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -50,31 +51,7 @@ function createTable($conn,$tableName,$body){
     }
 }
 /*Subjects tábla*/
-function HTMLbody(){
-    echo "<body>";
-    echo "<form name='nav' method='post' action=''>
-                <div>
-                    <div class='button-container'>
-                    <button type='submit' name='install' value='1' class='primary'>Adatbázis létrehozása!</button>
-                    <button type='submit' name='Refresh' value='1' class='secondary'>Adatbázis feltöltése!</button>
-                </div>
-            </form>
-    ";
-    echo "</body>";
 
-}
-function htmlHead(){
-    echo'<!DOCTYPE html>
-<html lang="hu">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Osztálynapló</title>
-    <link rel="stylesheet" href="style.css">
-</head>';
-}
-htmlHead();
-HTMLbody();
 /*Táblák létrehozása*/
 if (isset($_REQUEST["install"])) {
     
