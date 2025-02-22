@@ -160,13 +160,13 @@ function displayFooter(): void
         ";
 }
 
-/*function displayStudents($students, $classId)
+function displayStudents($students, $classId)
 {
     $class = getClass($classId);
-    $avg = getClassAvg($classId);
+    /*$avg = getClassAvg($classId); <h2>Átlag: {$avg['value']}</h2>*/
     echo "
         <h1>{$class['code']} / {$class['year']}</h1>
-        <h2>Átlag: {$avg['value']}</h2>
+        
         <table class='table'>
             <thead>
                 <tr><th>#</th><th>Név</th><th>Nem</th><th>Átlag</th></tr>
@@ -185,7 +185,7 @@ function displayFooter(): void
             </tfoot>
         </table>";
 }
-*/
+
 /*function displayStudentAvgDetails($student, $studentAvgDetails, $classId)
 {
     $class = getClass($classId);
@@ -257,7 +257,7 @@ function displayClass($year){
     echo "<div class='years-section' id='years-section'>";
     echo "<form method='POST'>";
     foreach ($values as $class) {
-        echo "<button type='submit' name='years/{$class['code']}' class='year-button' data-year='{$class['code']}'>{$class['code']}</button>";
+        echo "<button type='submit' name='students/{$class['id']}' class='year-button' data-year='{$class['code']}'>{$class['code']}</button>";
     }
     echo "</form>";
     echo "</div>";
@@ -277,14 +277,20 @@ foreach ($_POST as $key => $value) {
     }
 }
 foreach ($_POST as $key => $value) {
-    if (strpos($key, 'years/2024') === 0) {
+    if (strpos($key, 'years/202') === 0) {
         $t = explode('/', $key);
 
         // A kulcs a 'years/' prefixszel kezdődik
         displayClass($t[1]);
     }
 }
-
+foreach ($_POST as $key => $value) {
+    if (strpos($key, 'students/') === 0) {
+        $t = explode('/', $key);
+        displayStudents(getStudents($t[1]),$t[1]);
+        
+    }
+}
 
 htmlHead();
 HTMLbody();
