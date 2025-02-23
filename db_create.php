@@ -31,9 +31,10 @@ function databaseCreate($conn){
     ";
 
     if ($conn->query($sql) === TRUE) {
-        echo "Database created successfully";
+        echo "<script>alert('Adatbázis sikeresen létrehozva')</script>";/*echo "<script>alert('')</script>";*/
+
     } else {
-        echo "Error creating database: " . $conn->error;
+        echo "<script>alert('Error creating database:  $conn->error')</script>";
 }
 }
 function createTable($conn,$tableName,$body){
@@ -45,16 +46,17 @@ function createTable($conn,$tableName,$body){
     ENGINE = INNODB;
     ',$tableName,$body);
     if ($conn->query($sql) === TRUE) {
-        echo "<br> $tableName tábla sikeresen létrehozva!";
+        /*echo "<script>alert('$tableName tábla sikeresen létrehozva!')</script>";*/
+        /*echo "<br> $tableName tábla sikeresen létrehozva!";*/
     } else {
-        echo "Error creating database: " . $conn->error;
+        echo "<script>alert('Error creating database: $conn->error')</script>";
+        /*echo "Error creating database: " . $conn->error;*/
     }
 }
 /*Subjects tábla*/
 
 /*Táblák létrehozása*/
-if (isset($_REQUEST["install"])) {
-    
+function installDB($conn){
     databaseCreate($conn);
     /*Grades tábla*/
     createTable($conn,"grades","id int(4) NOT NULL AUTO_INCREMENT,
@@ -79,12 +81,19 @@ if (isset($_REQUEST["install"])) {
                                                         name varchar(32) DEFAULT NULL,
                                                         PRIMARY KEY (id)");
 }
-if (isset($_REQUEST["Refresh"])) {
+function refreshDB($conn){
     deleteDatabase($conn);
     tableHeader();
     generateSubjects(DATA,$conn);
     generateClasses(DATA,$conn);
     generateSchoolbook(DATA,$conn);
+}
+if (isset($_REQUEST["install"])) {
+    installDB($conn);
+    
+}
+if (isset($_REQUEST["Refresh"])) {
+    refreshDB($conn);
 }
 
 function deleteDatabase($conn) {
@@ -105,7 +114,7 @@ function deleteDatabase($conn) {
 
     // Többutasításos lekérdezés futtatása
     if ($conn->multi_query($sql)) {
-        echo "<br><p style='text-align:center;'>Az összes tábla sikeresen törölve lett az adatbázis létrehozása előtt!</p>";
+        /*echo "<br><p style='text-align:center;'>Az összes tábla sikeresen törölve lett az adatbázis létrehozása előtt!</p>";*/
         // Minden utasítás feldolgozása
         while ($conn->next_result()) {
             // Kötelező, hogy minden eredményt feldolgozzunk
@@ -133,9 +142,10 @@ function generateSubjects($data, $conn) {
     foreach ($data['subjects'] as $subject) {
         $stmt->bind_param("s", $subject); // "s" = string
         if ($stmt->execute()) {
-            echo "<tr><td>'$subject' sikeresen hozzáadva a Subjects táblához!</td></tr>";
+            /*echo "<tr><td>'$subject' sikeresen hozzáadva a Subjects táblához!</td></tr>";*/
         } else {
-            echo "Hiba az adat beszúrásakor: " . $stmt->error;
+            echo "<script>alert('Hiba az adat beszúrásakor: $stmt->error')</script>";
+            /*echo "Hiba az adat beszúrásakor: " . $stmt->error;*/
         }
     }
 
@@ -154,9 +164,11 @@ function generateClasses($data, $conn) {
         
         $stmt->bind_param("si", $class, $i); // "s" = string típus
         if ($stmt->execute()) {
-            echo "<tr><td>'$class' sikeresen hozzáadva a Classes táblához!</td></tr>";
+            /*echo "<tr><td>'$class' sikeresen hozzáadva a Classes táblához!</td></tr>";*/
         } else {
-            echo "Hiba a beszúrás során: " . $stmt->error;
+            echo "<script>alert('Hiba az adat beszúrásakor: $stmt->error')</script>";
+            /*
+            echo "Hiba a beszúrás során: " . $stmt->error;*/
         }
     }
 }
@@ -194,9 +206,10 @@ function generateSchoolbook($data,$conn) {
             $stmt->bind_param("sssi", $name, $gender, $class, $k); /* "sss" == string,string,string */
             // Lekérdezés végrehajtása
             if ($stmt->execute()) {
-                echo "<tr><td>'$name' sikeresen hozzáadva a Students táblához!</td></tr>";
+                /*echo "<tr><td>'$name' sikeresen hozzáadva a Students táblához!</td></tr>";*/
             } else {
-                echo "Hiba a student beszúrásakor: " . $stmt->error;
+                echo "<script>alert('Hiba az adat beszúrásakor: $stmt->error')</script>";
+                /*echo "Hiba a student beszúrásakor: " . $stmt->error;*/
             }
 
             // Lekérdezés lezárása

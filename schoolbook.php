@@ -30,14 +30,14 @@ function displayBanner()
 {
     echo '
     <div id="banner">
-        <h1>Váci Szakképzési Centrum</h1>
-        <h2>Boronkay György Műszaki Technikum és Gimnázium</h2>
+        <h1 class="centerText">Váci Szakképzési Centrum</h1>
+        <h2 class="centerText">Boronkay György Műszaki Technikum és Gimnázium</h2>
     </div>';
 }
 
 function displayLogo(): void
 {
-    echo "<img src='http://www.boronkay.vac.hu/images/boronkaylogo.png' alt='Boronkay Logo' id='logo'>
+    echo "<img class='image' src='http://www.boronkay.vac.hu/images/boronkaylogo.png' alt='Boronkay Logo' id='logo'>
         <hr>";
 }
 function displaySideMenu(): void
@@ -47,13 +47,17 @@ function displaySideMenu(): void
             displayLogo();
         
             echo "
+            <div style='text-align:center;'>
             <form method='POST'>
+            
+            
                  <ul>
-                    <li><input type='submit' name='years/' value='Years' href='#years-section'></li>
-                    <li><a href='#classes-section'>Classes</a></li>
-                    <li><a href='#students-section'>Students</a></li>
+                    <li><button type='submit' name='years/'>Years</button></li>
+                    <li><button type='submit' name='hallOfFame/'>Hall Of Fame</button></li>
                 </ul>
-                </form>"
+                </form>
+                </div>"
+                
                 ;
         
         
@@ -82,18 +86,8 @@ function displayBodyEnd(): void
     </html>
     ";
 }
-function displayInstallBtn()
-{
-    echo '
-        <form method="post">
-            <button type="submit" name="btn-install" title="Adatbázis telepítése">Telepítés</button>
-            <input type="checkbox" name="with-data" value="1" checked title="Adatokkal"><label for="with-data">Véletlenszerű adatokkal</label>
-        </form>
-        <p>A program első indítása esetén az adatbázis telepítése.</p>
-        ';
-}
 
-function displayMessage($message, $type = 'text', $important = false) {
+/*function displayMessage($message, $type = 'text', $important = false) {
     // Definiáljuk az üzenet-típusokhoz tartozó stílusokat
     $fontWeight = '';
     if ($important) {
@@ -119,10 +113,9 @@ function displayMessage($message, $type = 'text', $important = false) {
     // Kiírjuk az üzenetet a megfelelő stílussal
     echo "<div style='padding: 10px; margin: 10px 0; border-radius: 4px; $style $fontWeight'>$message</div>";
     flush();
-}
+}*/
 
 displayBodyStart();
-displayBodyEnd();
 
 
 function displayNav(): void
@@ -168,7 +161,11 @@ function displayStudents($students, $classId)
     echo "
         <h1 style='text-align:center;'>{$class[0]['code']} / {$class[0]['year']}</h1>
         <h1 style='text-align:center;'>Osztályátlag: {$classAVG[0]['atlag']}</h1>
-        <button type=submit name='specificStudent/'>Osztályátlag tantárgyanként</button>
+        <form method='POST'>
+        <div style='text-align: center;''>
+        <button id='classAvgButton' type=submit name='classAverage/{$class[0]['id']}'>Osztályátlag tantárgyanként</button>
+        </div>
+        </form>
         <table class='table'>
             <thead>
                 <tr><th>#</th><th>Név</th><th>Nem</th><th>Átlag</th></tr>
@@ -179,7 +176,7 @@ function displayStudents($students, $classId)
             foreach ($students as $student) {
                 $gender = $student['gender'] == 'W' ? 'Lány' : 'Fiú';
                 echo "
-                    <tr><td>{$student['id']}</td><td><button type=submit name='specificStudent/{$student['id']}'>{$student['name']}</button></td><td>$gender</td><td>{$student['avg']}</td></tr>
+                    <tr><td>{$student['id']}</td><td><button id='studentButton' type=submit name='specificStudent/{$student['id']}'>{$student['name']}</button></td><td>$gender</td><td>{$student['avg']}</td></tr>
                 ";
             }
             echo "</form>";
@@ -189,6 +186,32 @@ function displayStudents($students, $classId)
             </tfoot>
         </table>";
 }
+
+function displayClassSubjectData($classId)
+{
+    $data = getSubjectDataByStudentId($classId);
+    /*$avg = getClassAvg($classId); <h2>Átlag: {$avg['value']}</h2>*/
+    echo "
+        <h1 style='text-align:center;'>{$data[0]['osztaly']} / {$data[0]['ev']}</h1>
+        <table class='table'>
+            <thead>
+                <tr><th>Tantárgy</th><th>Átlag</th></tr>
+            </thead>    
+            <tbody>
+            ";
+            
+            foreach ($data as $class) {
+                echo "
+                    <tr><td>{$class['tantargy']}</td><td>{$class['atlag']}</td></tr>
+                ";
+            }
+            echo "
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>";
+}
+
 function displayStudentSubjectData($studentId)
 {
     $data = getSubjectDataByStudentId($studentId);
@@ -214,23 +237,22 @@ function displayStudentSubjectData($studentId)
             </tfoot>
         </table>";
 }
-
-/*function displayStudentAvgDetails($student, $studentAvgDetails, $classId)
+function displayTop10($year)
 {
-    $class = getClass($classId);
-    $average = getStudentAvg($student['id']);
+    $data = getTop10($year);
     echo "
-        <h1>{$student['name']} ({$class['code']} / {$class['year']})</h1>
-        <h2>Átlag: {$average['average']}</h2>
+        <h1 style='text-align:center;'>{$data[0]['year']} : TOP 10</h1>
         <table class='table'>
             <thead>
-                <tr><th>Tantárgy</th><th>Átlag</th></tr>
+                <tr><th>Helyezés</th><th>Név</th><th>Átlag</th></tr>
             </thead>    
             <tbody>
             ";
-            foreach ($studentAvgDetails as $detail) {
+            $sorszam = 0;
+            foreach ($data as $student) {
+                $sorszam += 1;
                 echo "
-                    <tr><td><a href='/school/classes?class-id={$class['id']}&student-id={$student['id']}&subject-id={$detail['id']}'>{$detail['subject']}</a</td><td>{$detail['avg']}</td></tr>
+                    <tr><td>{$sorszam}</td><td>{$student['name']}</td><td>{$student['atlag']}</td></tr>
                 ";
             }
             echo "
@@ -238,39 +260,37 @@ function displayStudentSubjectData($studentId)
             <tfoot>
             </tfoot>
         </table>";
-}*/
-/*
-function displayStudentMarksBySubject($marks, $studentId, $subjectId)
+}
+function displayHallOfFame()
 {
-    $student = getStudent($studentId);
-    $class = getClass($student['class_id']);
-    $subject = getSubject($subjectId);
-    $subjectAvg = getStudentAvgBySubjectId($studentId, $subjectId);
-
+    $data = getHallOfFame();
+    /*$avg = getClassAvg($classId); <h2>Átlag: {$avg['value']}</h2>*/
     echo "
-        <h1>{$student['name']} ({$class['code']} / {$class['year']})</h1>
-        <h2>{$subject['name']}: {$subjectAvg['average']}</h2>
+    <h1 style='text-align:center;'>Hall Of Fame</h1>
+        <h1 style='text-align:center;'>Legjobb osztály: {$data[0]['osztaly']}/{$data[0]['ev']}</h1>
         <table class='table'>
             <thead>
-                <tr><th>Osztályzat</th><th>Dátum</th></tr>
+                <tr><th>Helyezés</th><th>Név</th><th>Átlag</th></tr>
             </thead>    
             <tbody>
             ";
-    foreach ($marks as $mark) {
-        echo "
-                    <tr><td>{$mark['mark']}</td><td>{$mark['date']}</td></tr>
+            $sorszam = 0;
+            foreach ($data as $student) {
+                $sorszam += 1;
+                echo "
+                    <tr><td>{$sorszam}</td><td>{$student['name']}</td><td>{$student['atlag']}</td></tr>
                 ";
-    }
-    echo "
+            }
+            echo "
             </tbody>
             <tfoot>
             </tfoot>
         </table>";
 }
-*/
+
 function displayYears($years): void
 {
-    echo "<div class='years-section' id='years-section'>";
+    echo "<div class='years-section' id='years-section' style='text-align:center;'>";
     echo "<form method='POST'>";
     foreach ($years as $year) {
         echo "<button type='submit' name='years/{$year['year']}' class='year-button' data-year='{$year['year']}'>{$year['year']}</button>";
@@ -283,11 +303,12 @@ function displayYears($years): void
 
 function displayClass($year){
     $values = getClassByYear($year);
-    echo "<div class='years-section' id='years-section'>";
+    echo "<div class='years-section' id='years-section' style='text-align:center;'>";
     echo "<form method='POST'>";
     foreach ($values as $class) {
-        echo "<button type='submit' name='students/{$class['id']}' class='year-button' data-year='{$class['code']}'>{$class['code']}</button>";
+        echo "<button type='submit' name='students/{$class['id']}' class='year-button ' id='classButton' data-year='{$class['code']}'>{$class['code']}</button>";
     }
+    echo "<button type='submit' name='top10/{$year}' class='year-button' id='top10Button'>TOP 10</button>";
     echo "</form>";
     echo "</div>";
     echo "<div class='classes-section' id='classes-section'></div>";
@@ -314,6 +335,12 @@ foreach ($_POST as $key => $value) {
         
     }
     if (strpos($key, 'years/') === 0) {
+        if(!DBExists()){
+            global $servername,$username,$password;
+            $conn = new mysqli($servername, $username, $password);
+            installDB($conn);
+            refreshDB($conn);
+        }
         // A kulcs a 'years/' prefixszel kezdődik
         displayNav();
     }
@@ -323,9 +350,59 @@ foreach ($_POST as $key => $value) {
         displayNav();
         displayStudentSubjectData($t[1]);
     }
+    if (strpos($key, 'classAverage/') === 0) {
+        
+        $t = explode('/', $key);
+        displayNav();
+        displayClassSubjectData($t[1]);
+    }
+    if (strpos($key, 'hallOfFame/') === 0) {
+        
+        if(!DBExists()){
+            global $servername,$username,$password;
+            $conn = new mysqli($servername, $username, $password);
+            installDB($conn);
+            refreshDB($conn);
+        }
+        displayHallOfFame();
+    }
+    if (strpos($key, 'top10/') === 0) {
+        $t = explode('/', $key);
+        displayTop10($t[1]);
+
+    }
+}
+
+
+
+
+
+
+
+function DBExists(){
+    global $servername,$username,$password;
+    try {
+        // Kapcsolódás az adatbázis szerverhez (de nem egy konkrét adatbázishoz)
+        $conn = new PDO("mysql:host=$servername", $username, $password);
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+        // Lekérdezés: létezik-e az adatbázis?
+        $stmt = $conn->query("SHOW DATABASES LIKE 'schoolbook'");
+        
+        if ($stmt->rowCount() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (PDOException $e) {
+        echo "Hiba: " . $e->getMessage();
+    }
+    
+    $conn = null;
 }
 
 
 htmlHead();
 HTMLbody();
+displayBodyEnd();
 ?>

@@ -59,6 +59,7 @@ SELECT c.year, c.code,su.name, AVG(g.grade) from grades g
 JOIN students s ON s.id = g.student_id
 JOIN classes c ON s.class_id = c.id
 JOIN subjects su ON su.id = g.subject_id
+WHERE c.id = 1
 GROUP BY s.class_id, g.subject_id
 
 /*Jelenítse meg az iskola 10 legjobb tanulóját az elért átlaguk sorrendjében a kiválasztott évben*/
@@ -93,3 +94,19 @@ where class_id = (SELECT c.id from grades g
                   order by AVG(g.grade) DESC
                   limit 1)
 LIMIT 1
+
+
+
+SELECT s.name, ROUND(AVG(g.grade), 2) AS avg_grade, c.code, c.year 
+FROM students s
+JOIN grades g ON g.student_id = s.id
+JOIN classes c ON c.id = s.class_id
+WHERE class_id = (SELECT c.id FROM grades g
+                  JOIN students s ON s.id = g.student_id
+                  JOIN classes c ON s.class_id = c.id
+                  GROUP BY s.class_id
+                  ORDER BY AVG(g.grade) DESC
+                  LIMIT 1)
+GROUP BY s.id, s.name, c.code, c.year
+ORDER BY avg_grade DESC
+LIMIT 10;

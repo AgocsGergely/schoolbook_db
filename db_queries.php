@@ -101,6 +101,37 @@ function getClassByYear($year){
 
 }
 
+
+
+function getClassDataByStudentId($classId){
+    
+    global $servername,$username,$password;
+        $kapcsolat = new mysqli($servername, $username, $password, "schoolbook");
+    
+        // Kapcsolat ellenőrzése
+        if ($kapcsolat->connect_error) {
+            die("Kapcsolódási hiba: " . $kapcsolat->connect_error);
+        }
+    
+        // Lekérdezés végrehajtása
+        $eredmeny = $kapcsolat->query("
+SELECT c.year as ev, c.code as osztaly,su.name as tantargy, AVG(g.grade) as atlag from grades g
+JOIN students s ON s.id = g.student_id
+JOIN classes c ON s.class_id = c.id
+JOIN subjects su ON su.id = g.subject_id
+WHERE c.id = $classId
+GROUP BY s.class_id, g.subject_id");
+    
+        if ($eredmeny->num_rows > 0) {
+            // Adatok tömbbe mentése
+            $adatok = $eredmeny->fetch_all(MYSQLI_ASSOC);
+            $kapcsolat->close();
+            return $adatok; // Ellenőrzéshez kiíratás
+        } else {
+            echo "Nincs találat.";
+            return [];
+        }
+    }
 function getSubjectDataByStudentId($studentId){
     
 global $servername,$username,$password;
@@ -113,7 +144,7 @@ global $servername,$username,$password;
 
     // Lekérdezés végrehajtása
     $eredmeny = $kapcsolat->query("
-SELECT c.code as osztaly,c.year as ev,s.name as nev, su.name as tantargy, round(AVG(g.grade),2) as atlag FROM students s
+SELECT c.id as classId, c.code as osztaly,c.year as ev,s.name as nev, su.name as tantargy, round(AVG(g.grade),2) as atlag FROM students s
 JOIN grades g ON g.student_id = s.id
 JOIN subjects su ON su.id = g.subject_id
 JOIN classes c ON c.id = s.class_id
@@ -160,4 +191,73 @@ ORDER by name");
         return [];
     }
 }
+
+function getHallOfFame(){
+    
+
+global $servername,$username,$password;
+        $kapcsolat = new mysqli($servername, $username, $password, "schoolbook");
+    
+        // Kapcsolat ellenőrzése
+        if ($kapcsolat->connect_error) {
+            die("Kapcsolódási hiba: " . $kapcsolat->connect_error);
+        }
+    
+        // Lekérdezés végrehajtása
+        $eredmeny = $kapcsolat->query("
+SELECT s.name, ROUND(AVG(g.grade), 2) AS atlag, c.code as osztaly, c.year as ev 
+FROM students s
+JOIN grades g ON g.student_id = s.id
+JOIN classes c ON c.id = s.class_id
+WHERE class_id = (SELECT c.id FROM grades g
+                  JOIN students s ON s.id = g.student_id
+                  JOIN classes c ON s.class_id = c.id
+                  GROUP BY s.class_id
+                  ORDER BY AVG(g.grade) DESC
+                  LIMIT 1)
+GROUP BY s.id, s.name, c.code, c.year
+ORDER BY atlag DESC
+LIMIT 10;");
+    
+        if ($eredmeny->num_rows > 0) {
+            // Adatok tömbbe mentése
+            $adatok = $eredmeny->fetch_all(MYSQLI_ASSOC);
+            $kapcsolat->close();
+            return $adatok; // Ellenőrzéshez kiíratás
+        } else {
+            echo "Nincs találat.";
+            return [];
+        }
+}
+
+function getTop10($year){
+    
+    global $servername,$username,$password;
+        $kapcsolat = new mysqli($servername, $username, $password, "schoolbook");
+    
+        // Kapcsolat ellenőrzése
+        if ($kapcsolat->connect_error) {
+            die("Kapcsolódási hiba: " . $kapcsolat->connect_error);
+        }
+    
+        // Lekérdezés végrehajtása
+        $eredmeny = $kapcsolat->query("
+    SELECT name, round(AVG(g.grade),2) as atlag, year FROM students s
+JOIN grades g ON g.student_id = s.id
+JOIN classes c ON c.id = s.class_id
+where year = $year
+group by name
+ORDER by atlag DESC
+LIMIT 10");
+    
+        if ($eredmeny->num_rows > 0) {
+            // Adatok tömbbe mentése
+            $adatok = $eredmeny->fetch_all(MYSQLI_ASSOC);
+            $kapcsolat->close();
+            return $adatok; // Ellenőrzéshez kiíratás
+        } else {
+            echo "Nincs találat.";
+            return [];
+        }
+    }
 ?>
