@@ -162,21 +162,50 @@ function displayFooter(): void
 
 function displayStudents($students, $classId)
 {
-    $class = getClass($classId);
+    $class = getClassByID($classId);
+    $classAVG = getClassAVG($classId);
     /*$avg = getClassAvg($classId); <h2>Átlag: {$avg['value']}</h2>*/
     echo "
-        <h1>{$class['code']} / {$class['year']}</h1>
-        
+        <h1 style='text-align:center;'>{$class[0]['code']} / {$class[0]['year']}</h1>
+        <h1 style='text-align:center;'>Osztályátlag: {$classAVG[0]['atlag']}</h1>
+        <button type=submit name='specificStudent/'>Osztályátlag tantárgyanként</button>
         <table class='table'>
             <thead>
                 <tr><th>#</th><th>Név</th><th>Nem</th><th>Átlag</th></tr>
             </thead>    
             <tbody>
             ";
+            echo "<form method='POST'>";
             foreach ($students as $student) {
-                $gender = $student['gender'] == 1 ? 'Fiú' : 'Lány';
+                $gender = $student['gender'] == 'W' ? 'Lány' : 'Fiú';
                 echo "
-                    <tr><td>{$student['id']}</td><td><a href='/school/classes?class-id=$classId&student-id={$student['id']}'>{$student['name']}</a></td><td>$gender</td><td>{$student['avg']}</td></tr>
+                    <tr><td>{$student['id']}</td><td><button type=submit name='specificStudent/{$student['id']}'>{$student['name']}</button></td><td>$gender</td><td>{$student['avg']}</td></tr>
+                ";
+            }
+            echo "</form>";
+            echo "
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>";
+}
+function displayStudentSubjectData($studentId)
+{
+    $data = getSubjectDataByStudentId($studentId);
+    /*$avg = getClassAvg($classId); <h2>Átlag: {$avg['value']}</h2>*/
+    echo "
+        <h1 style='text-align:center;'>{$data[0]['osztaly']} / {$data[0]['ev']}</h1>
+        <h1 style='text-align:center;'>{$data[0]['nev']}</h1>
+        <table class='table'>
+            <thead>
+                <tr><th>Tantárgy</th><th>Átlag</th></tr>
+            </thead>    
+            <tbody>
+            ";
+            
+            foreach ($data as $student) {
+                echo "
+                    <tr><td>{$student['tantargy']}</td><td>{$student['atlag']}</td></tr>
                 ";
             }
             echo "
@@ -210,8 +239,8 @@ function displayStudents($students, $classId)
             </tfoot>
         </table>";
 }*/
-
-/*function displayStudentMarksBySubject($marks, $studentId, $subjectId)
+/*
+function displayStudentMarksBySubject($marks, $studentId, $subjectId)
 {
     $student = getStudent($studentId);
     $class = getClass($student['class_id']);
@@ -253,7 +282,7 @@ function displayYears($years): void
 }
 
 function displayClass($year){
-    $values = getClass($year);
+    $values = getClassByYear($year);
     echo "<div class='years-section' id='years-section'>";
     echo "<form method='POST'>";
     foreach ($values as $class) {
@@ -267,15 +296,10 @@ function displayClass($year){
     
 }
 
-if (isset($_POST['years'])){
+/*if (isset($_POST['years'])){
     
-}
-foreach ($_POST as $key => $value) {
-    if (strpos($key, 'years/') === 0) {
-        // A kulcs a 'years/' prefixszel kezdődik
-        displayNav();
-    }
-}
+}*/
+
 foreach ($_POST as $key => $value) {
     if (strpos($key, 'years/202') === 0) {
         $t = explode('/', $key);
@@ -283,14 +307,24 @@ foreach ($_POST as $key => $value) {
         // A kulcs a 'years/' prefixszel kezdődik
         displayClass($t[1]);
     }
-}
-foreach ($_POST as $key => $value) {
     if (strpos($key, 'students/') === 0) {
         $t = explode('/', $key);
+        displayNav();
         displayStudents(getStudents($t[1]),$t[1]);
         
     }
+    if (strpos($key, 'years/') === 0) {
+        // A kulcs a 'years/' prefixszel kezdődik
+        displayNav();
+    }
+    if (strpos($key, 'specificStudent/') === 0) {
+        
+        $t = explode('/', $key);
+        displayNav();
+        displayStudentSubjectData($t[1]);
+    }
 }
+
 
 htmlHead();
 HTMLbody();

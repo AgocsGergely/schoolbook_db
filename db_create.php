@@ -71,7 +71,7 @@ if (isset($_REQUEST["install"])) {
     /*Students tábla*/
     createTable($conn,"Students","id int(11) NOT NULL AUTO_INCREMENT,
                                                         name varchar(50) DEFAULT NULL,
-                                                        gender int(11) DEFAULT NULL,
+                                                        gender varchar(1) DEFAULT NULL,
                                                         class_id int(11) DEFAULT NULL,
                                                         PRIMARY KEY (id)");
     /*Subjects tábla*/

@@ -45,10 +45,11 @@ ORDER by name
 
 USE schoolbook;
 
-SELECT s.name, su.name, round(AVG(g.grade),2) FROM students s
+SELECT c.code,c.year,s.name, su.name, round(AVG(g.grade),2) as atlag FROM students s
 JOIN grades g ON g.student_id = s.id
 JOIN subjects su ON su.id = g.subject_id
-where class_id = 1/*$selected class*/
+JOIN classes c ON c.id = s.class_id
+where g.student_id = 1/*$selected class*/
 group by g.student_id, g.subject_id
 ORDER by s.name
 
