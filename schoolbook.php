@@ -320,65 +320,6 @@ function displayClass($year){
 /*if (isset($_POST['years'])){
     
 }*/
-
-foreach ($_POST as $key => $value) {
-    if (strpos($key, 'years/202') === 0) {
-        $t = explode('/', $key);
-
-        // A kulcs a 'years/' prefixszel kezdődik
-        displayClass($t[1]);
-    }
-    if (strpos($key, 'students/') === 0) {
-        $t = explode('/', $key);
-        displayNav();
-        displayStudents(getStudents($t[1]),$t[1]);
-        
-    }
-    if (strpos($key, 'years/') === 0) {
-        if(!DBExists()){
-            global $servername,$username,$password;
-            $conn = new mysqli($servername, $username, $password);
-            installDB($conn);
-            refreshDB($conn);
-        }
-        // A kulcs a 'years/' prefixszel kezdődik
-        displayNav();
-    }
-    if (strpos($key, 'specificStudent/') === 0) {
-        
-        $t = explode('/', $key);
-        displayNav();
-        displayStudentSubjectData($t[1]);
-    }
-    if (strpos($key, 'classAverage/') === 0) {
-        
-        $t = explode('/', $key);
-        displayNav();
-        displayClassSubjectData($t[1]);
-    }
-    if (strpos($key, 'hallOfFame/') === 0) {
-        
-        if(!DBExists()){
-            global $servername,$username,$password;
-            $conn = new mysqli($servername, $username, $password);
-            installDB($conn);
-            refreshDB($conn);
-        }
-        displayHallOfFame();
-    }
-    if (strpos($key, 'top10/') === 0) {
-        $t = explode('/', $key);
-        displayTop10($t[1]);
-
-    }
-}
-
-
-
-
-
-
-
 function DBExists(){
     global $servername,$username,$password;
     try {
@@ -400,9 +341,63 @@ function DBExists(){
     
     $conn = null;
 }
+function checkPost(){
+    foreach ($_POST as $key => $value) {
+        if (strpos($key, 'years/202') === 0) {
+            $t = explode('/', $key);
 
+            // A kulcs a 'years/' prefixszel kezdődik
+            displayClass($t[1]);
+        }
+        if (strpos($key, 'students/') === 0) {
+            $t = explode('/', $key);
+            displayNav();
+            displayStudents(getStudents($t[1]),$t[1]);
+            
+        }
+        if (strpos($key, 'years/') === 0) {
+            if(!DBExists()){
+                global $servername,$username,$password;
+                $conn = new mysqli($servername, $username, $password);
+                installDB($conn);
+                refreshDB($conn);
+            }
+            // A kulcs a 'years/' prefixszel kezdődik
+            displayNav();
+        }
+        if (strpos($key, 'specificStudent/') === 0) {
+            
+            $t = explode('/', $key);
+            displayNav();
+            displayStudentSubjectData($t[1]);
+        }
+        if (strpos($key, 'classAverage/') === 0) {
+            
+            $t = explode('/', $key);
+            displayNav();
+            displayClassSubjectData($t[1]);
+        }
+        if (strpos($key, 'hallOfFame/') === 0) {
+            
+            if(!DBExists()){
+                global $servername,$username,$password;
+                $conn = new mysqli($servername, $username, $password);
+                installDB($conn);
+                refreshDB($conn);
+            }
+            displayHallOfFame();
+        }
+        if (strpos($key, 'top10/') === 0) {
+            $t = explode('/', $key);
+            displayTop10($t[1]);
 
+        }
+    }
+}
+
+checkPost();
 htmlHead();
 HTMLbody();
 displayBodyEnd();
+
 ?>
