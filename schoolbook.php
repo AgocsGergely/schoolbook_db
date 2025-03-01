@@ -9,6 +9,11 @@ function HTMLbody(){
                     <div class='button-container'>
                     <button type='submit' name='install' value='1' class='primary'>Adatbázis létrehozása!</button>
                     <button type='submit' name='Refresh' value='1' class='secondary'>Adatbázis feltöltése!</button>
+                    </div>
+                    <div class='button-container'>
+                    <button type='submit' name='admin/' value='1' class='danger'>Admin felület</button>
+
+                    </div>
                 </div>
             </form>
     ";
@@ -341,13 +346,77 @@ function DBExists(){
     
     $conn = null;
 }
+function displayAdminSide(){
+    echo "<form name='nav' method='post' action=''>
+                <div>
+    <div class='button-container'>
+                    <button type='submit' name='admin/ev' value='1' class='danger'>Évek</button>
+                    <button type='submit' name='admin/osztaly' value='1' class='danger'>Osztályok</button>
+                    <button type='submit' name='admin/tantargy' value='1' class='danger'>Tantárgyak</button>
+                    <button type='submit' name='admin/diak' value='1' class='danger'>Diákok</button>
+                    <button type='submit' name='admin/jegy' value='1' class='danger'>Jegyek</button>
+                    </div>
+                    </div>
+                    </form>";
+}
+function displayAdminYears($years){
+    echo "<div class='years-section' id='years-section' style='text-align:center;'>";
+    echo "<form method='POST'>";
+    foreach ($years as $year) {
+        echo "<button type='submit' name='admin/ev/{$year['year']}' class='danger' data-year='{$year['year']}'>{$year['year']}</button>";
+    }
+    echo "<button type='submit' name='admin/ev/add' class='primary' data-year='{$year['year']}'>Év hozzáadása</button>";
+    echo "</form>";
+    echo "</div>";
+    echo "<div class='classes-section' id='classes-section'></div>";
+    echo "<div class='students-section' id='students-section'></div>";
+}
+function displayYearOptions($year){
+    echo "<div class='years-section' id='years-section' style='text-align:center;'>";
+    echo '<form method="POST">
+        <label for="admin/ev/'.$year.'/mod">'.$year.':</label>
+        <input type="number" min="0" id="admin/ev/'.$year.'/mod" name="admin/ev/'.$year.'/mod">
+        <input type="submit" value="Módosítás" class="danger">
+      </form>';
+    echo "<form method='POST'>";
+    
+        /*echo "<button type='submit' name='admin/ev/{$year}/mod' class='danger' >Módosítás</button>";*/
+        echo "<button type='submit' name='admin/ev/{$year}/del' class='danger' >Törlés</button>";
+        
+        
+    echo "</form>";
+    echo "</div>";
+    echo "<div class='classes-section' id='classes-section'></div>";
+    echo "<div class='students-section' id='students-section'></div>";
+}
+
 function checkPost(){
     foreach ($_POST as $key => $value) {
-        if (strpos($key, 'years/202') === 0) {
+        if (strpos($key, 'admin/') === 0) {
+            $t = explode('/', $key);
+            if ($t[1] == null){
+                displayAdminSide();
+            }
+            if ($t[1] == 'ev'){
+                displayAdminYears(getYears());
+                if(isset($t[2])){
+                    displayYearOptions($t[2]);
+                    if(isset($t[3])){
+                        
+                        if($t[3] == "mod"){modifyYear($t[2],$_POST["admin/ev/{$t[2]}/mod"]);}
+                        if($t[3] == "del"){deleteYear($t[2]);}
+                    }
+                }
+            }
+            
+        }
+        if (strpos($key, 'years/') === 0) {
             $t = explode('/', $key);
 
             // A kulcs a 'years/' prefixszel kezdődik
+            if($t[1] != null){
             displayClass($t[1]);
+            }
         }
         if (strpos($key, 'students/') === 0) {
             $t = explode('/', $key);
