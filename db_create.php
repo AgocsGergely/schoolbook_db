@@ -83,10 +83,11 @@ function installDB($conn){
 }
 function refreshDB($conn){
     deleteDatabase($conn);
-    tableHeader();
+    /*tableHeader();*/
     generateSubjects(DATA,$conn);
     generateClasses(DATA,$conn);
     generateSchoolbook(DATA,$conn);
+    echo "<script>alert('Az adatbázis sikeresen frissítve lett!')</script>";
 }
 if (isset($_REQUEST["install"])) {
     installDB($conn);
@@ -242,9 +243,9 @@ function generateSchoolbook($data,$conn) {
 
                     // Lekérdezés végrehajtása
                     if ($stmt->execute()) {
-                        echo "<tr><td>'$name' diák jegye sikeresen hozzáadva!</td></tr>";
+                        /*echo "<tr><td>'$name' diák jegye sikeresen hozzáadva!</td></tr>";*/
                     } else {
-                        echo "Hiba a jegy beszúrásakor: " . $stmt->error;
+                        /*echo "Hiba a jegy beszúrásakor: " . $stmt->error;*/
                     }
 
                     // Lekérdezés lezárása
