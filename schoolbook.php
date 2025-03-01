@@ -389,6 +389,27 @@ function displayYearOptions($year){
     echo "<div class='classes-section' id='classes-section'></div>";
     echo "<div class='students-section' id='students-section'></div>";
 }
+function displayAddYear(){
+    echo "<div class='years-section' id='years-section' style='text-align:center;'>";
+    echo '<form method="POST">
+        <label for="admin/ev/add/ev">Hozzáadandó év:</label>
+        <input type="number" min="0" id="admin/ev/add/ev" name="admin/ev/add/ev">
+        
+        <label for="admin/ev/add/class">Osztály:</label>
+        <input type="text" min="1" max="12" id="admin/ev/add/class" name="admin/ev/add/class">
+        
+        <input type="submit" value="Hozzáadás" class="danger">
+      </form>';
+
+    echo "<form method='POST'>";
+    
+        
+        
+    echo "</form>";
+    echo "</div>";
+    echo "<div class='classes-section' id='classes-section'></div>";
+    echo "<div class='students-section' id='students-section'></div>";
+}
 
 function checkPost(){
     foreach ($_POST as $key => $value) {
@@ -400,11 +421,20 @@ function checkPost(){
             if ($t[1] == 'ev'){
                 displayAdminYears(getYears());
                 if(isset($t[2])){
-                    displayYearOptions($t[2]);
-                    if(isset($t[3])){
-                        
-                        if($t[3] == "mod"){modifyYear($t[2],$_POST["admin/ev/{$t[2]}/mod"]);}
-                        if($t[3] == "del"){deleteYear($t[2]);}
+                    if($t[2] == 'add'){
+                        displayAddYear();
+                        if(isset($t[3])){
+                            addYear($_POST["admin/ev/add/ev"],$_POST["admin/ev/add/class"]);
+                        }
+
+                    }
+                        if($t[2] != 'add'){
+                            displayYearOptions($t[2]);
+                            if(isset($t[3])){
+                                
+                                if($t[3] == "mod"){modifyYear($t[2],$_POST["admin/ev/{$t[2]}/mod"]);}
+                                if($t[3] == "del"){deleteYear($t[2]);}
+                            }
                     }
                 }
             }

@@ -28,7 +28,40 @@ function getStudents($classId){
         return [];
     }
 }
+function addYear($year,$class){
+    global $servername, $username, $password;
+    $kapcsolat = new mysqli($servername, $username, $password, "schoolbook");
+    
+    // Kapcsolat ellenőrzése
+    if ($kapcsolat->connect_error) {
+        die("Kapcsolódási hiba: " . $kapcsolat->connect_error);
+    }
+    
+    
+    // UPDATE parancs előkészítése
+    $sql = "INSERT INTO classes (code, year)
+    SELECT ?, ?
+    WHERE NOT EXISTS (
+        SELECT 1 FROM classes WHERE code = ? AND year = ?
+    );";
+    
+            
+    
+    // Előkészített parancs használata
+    $stmt = $kapcsolat->prepare($sql);
+    $stmt->bind_param("sisi",  $class,$year,$class,$year);
+    if ($stmt->execute()) {
+        header("Location: schoolbook.php");
+        echo "<script>alert('Sikeres törlés!');</script>";
+    } else {
+        echo "Hiba történt: " . $kapcsolat->error;
+    }
+    
+    // Kapcsolat lezárása
+    $stmt->close();
+    $kapcsolat->close();
 
+}
 function getYears(){
     global $servername,$username,$password;
     $kapcsolat = new mysqli($servername, $username, $password, "schoolbook");
