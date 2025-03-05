@@ -28,6 +28,39 @@ function getStudents($classId){
         return [];
     }
 }
+function addSubject($subject){
+    global $servername, $username, $password;
+    $kapcsolat = new mysqli($servername, $username, $password, "schoolbook");
+    
+    // Kapcsolat ellenőrzése
+    if ($kapcsolat->connect_error) {
+        die("Kapcsolódási hiba: " . $kapcsolat->connect_error);
+    }
+    
+    
+    // UPDATE parancs előkészítése
+    $sql = "INSERT INTO subjects (name)
+    SELECT ?
+    WHERE NOT EXISTS (
+        SELECT 1 FROM subjects WHERE name = ?
+    );";
+    
+            
+    
+    // Előkészített parancs használata
+    $stmt = $kapcsolat->prepare($sql);
+    $stmt->bind_param("ss",$subject,$subject);
+    if ($stmt->execute()) {
+        header("Location: schoolbook.php");
+        echo "<script>alert('Sikeres hozzáadás!');</script>";
+    } else {
+        echo "Hiba történt: " . $kapcsolat->error;
+    }
+    
+    // Kapcsolat lezárása
+    $stmt->close();
+    $kapcsolat->close();
+}
 function addYear($year,$class){
     global $servername, $username, $password;
     $kapcsolat = new mysqli($servername, $username, $password, "schoolbook");
@@ -52,7 +85,7 @@ function addYear($year,$class){
     $stmt->bind_param("sisi",  $class,$year,$class,$year);
     if ($stmt->execute()) {
         header("Location: schoolbook.php");
-        echo "<script>alert('Sikeres törlés!');</script>";
+        echo "<script>alert('Sikeres hozzáadás!');</script>";
     } else {
         echo "Hiba történt: " . $kapcsolat->error;
     }
@@ -61,6 +94,28 @@ function addYear($year,$class){
     $stmt->close();
     $kapcsolat->close();
 
+}
+function getSubjects(){
+    global $servername,$username,$password;
+    $kapcsolat = new mysqli($servername, $username, $password, "schoolbook");
+
+    // Kapcsolat ellenőrzése
+    if ($kapcsolat->connect_error) {
+        die("Kapcsolódási hiba: " . $kapcsolat->connect_error);
+    }
+
+    // Lekérdezés végrehajtása
+    $eredmeny = $kapcsolat->query("SELECT name FROM subjects");
+
+    if ($eredmeny->num_rows > 0) {
+        // Adatok tömbbe mentése
+        $adatok = $eredmeny->fetch_all(MYSQLI_ASSOC);
+        $kapcsolat->close();
+        return $adatok; // Ellenőrzéshez kiíratás
+    } else {
+        echo "Nincs találat.";
+        return [];
+    }
 }
 function getYears(){
     global $servername,$username,$password;
@@ -182,7 +237,10 @@ $sql = "UPDATE `classes` SET `year` = ? WHERE `year` = ?";
 $stmt = $kapcsolat->prepare($sql);
 $stmt->bind_param("ii", $modifiedYear, $year);
 if ($stmt->execute()) {
+    header("Location: schoolbook.php");
     echo "<script>alert('Sikeres frissítés!')</script>";
+   
+    
 } else {
     echo "Hiba történt: " . $kapcsolat->error;
 }

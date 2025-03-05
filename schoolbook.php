@@ -28,6 +28,7 @@ function htmlHead(){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Osztálynapló</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="fontawesome/css/all.css">
 </head>';
 }
 
@@ -365,7 +366,7 @@ function displayAdminYears($years){
     foreach ($years as $year) {
         echo "<button type='submit' name='admin/ev/{$year['year']}' class='danger' data-year='{$year['year']}'>{$year['year']}</button>";
     }
-    echo "<button type='submit' name='admin/ev/add' class='primary' data-year='{$year['year']}'>Év hozzáadása</button>";
+    echo "<button type='submit' name='admin/ev/add' class='primary' data-year='{$year['year']}'><i class='fa-solid fa-folder-plus'></i> Év hozzáadása</button>";
     echo "</form>";
     echo "</div>";
     echo "<div class='classes-section' id='classes-section'></div>";
@@ -376,12 +377,15 @@ function displayYearOptions($year){
     echo '<form method="POST">
         <label for="admin/ev/'.$year.'/mod">'.$year.':</label>
         <input type="number" min="0" id="admin/ev/'.$year.'/mod" name="admin/ev/'.$year.'/mod">
-        <input type="submit" value="Módosítás" class="danger">
+        <button type="submit">
+  <i class="fa-solid fa-pen-to-square"></i> Mentés
+</button>
+
       </form>';
     echo "<form method='POST'>";
     
         /*echo "<button type='submit' name='admin/ev/{$year}/mod' class='danger' >Módosítás</button>";*/
-        echo "<button type='submit' name='admin/ev/{$year}/del' class='danger' >Törlés</button>";
+        echo "<button type='submit' name='admin/ev/{$year}/del' class='danger' ><i class='fa-solid fa-trash'></i> Törlés</button>";
         
         
     echo "</form>";
@@ -402,9 +406,32 @@ function displayAddYear(){
       </form>';
 
     echo "<form method='POST'>";
-    
-        
-        
+    echo "</form>";
+    echo "</div>";
+    echo "<div class='classes-section' id='classes-section'></div>";
+    echo "<div class='students-section' id='students-section'></div>";
+}
+function displayAddSubject(){
+    echo "<div class='years-section' id='years-section' style='text-align:center;'>";
+    echo '<form method="POST">
+        <label for="admin/tantargy/add/tantargy">Hozzáadandó tantárgy:</label>
+        <input type="text" id="admin/tantargy/add/tantargy" name="admin/tantargy/add/tantargy">
+        <Button type="submit"class="success"><i class="fa-solid fa-plus"></i></Button>
+      </form>';
+
+    echo "<form method='POST'>";
+    echo "</form>";
+    echo "</div>";
+    echo "<div class='classes-section' id='classes-section'></div>";
+    echo "<div class='students-section' id='students-section'></div>";
+}
+function displayAdminSubjects($subjects){
+    echo "<div class='years-section' id='years-section' style='text-align:center;'>";
+    echo "<form method='POST'>";
+    foreach ($subjects as $subject) {
+        echo "<button type='submit' name='admin/tantargy/{$subject['name']}' class='danger' data-year='{$subject['name']}'>{$subject['name']}</button>";
+    }
+    echo "<button type='submit' name='admin/tantargy/add' class='primary' data-year='{$subject['name']}'><i class='fa-solid fa-folder-plus'></i> Tantárgy hozzáadása</button>";
     echo "</form>";
     echo "</div>";
     echo "<div class='classes-section' id='classes-section'></div>";
@@ -435,6 +462,17 @@ function checkPost(){
                                 if($t[3] == "mod"){modifyYear($t[2],$_POST["admin/ev/{$t[2]}/mod"]);}
                                 if($t[3] == "del"){deleteYear($t[2]);}
                             }
+                    }
+                }
+            }
+            if ($t[1] == 'tantargy'){
+                displayAdminSubjects(getSubjects());
+                if(isset($t[2])){
+                    if($t[2] == 'add'){
+                        displayAddSubject();
+                        if(isset($t[3])){
+                            addSubject($_POST["admin/tantargy/add/tantargy"]);
+                        }
                     }
                 }
             }
