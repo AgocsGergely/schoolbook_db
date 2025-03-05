@@ -372,11 +372,11 @@ function displayAdminYears($years){
     echo "<div class='classes-section' id='classes-section'></div>";
     echo "<div class='students-section' id='students-section'></div>";
 }
-function displayYearOptions($year){
+function displayOptions($prefix,$year){
     echo "<div class='years-section' id='years-section' style='text-align:center;'>";
     echo '<form method="POST">
-        <label for="admin/ev/'.$year.'/mod">'.$year.':</label>
-        <input type="number" min="0" id="admin/ev/'.$year.'/mod" name="admin/ev/'.$year.'/mod">
+        <label for="admin/'.$prefix.'/'.$year.'/mod">'.$year.':</label>
+        <input type="number" min="0" id="admin/'.$prefix.'/'.$year.'/mod" name="admin/'.$prefix.'/'.$year.'/mod">
         <button type="submit">
   <i class="fa-solid fa-pen-to-square"></i> Mentés
 </button>
@@ -456,7 +456,7 @@ function checkPost(){
 
                     }
                         if($t[2] != 'add'){
-                            displayYearOptions($t[2]);
+                            displayOptions('ev',$t[2]);
                             if(isset($t[3])){
                                 
                                 if($t[3] == "mod"){modifyYear($t[2],$_POST["admin/ev/{$t[2]}/mod"]);}
@@ -474,6 +474,15 @@ function checkPost(){
                             addSubject($_POST["admin/tantargy/add/tantargy"]);
                         }
                     }
+                    if($t[2] != 'add'){
+                        displayOptions('tantargy',$t[2]);
+                        if(isset($t[3])){
+                            
+                            /*if($t[3] == "mod"){modifySubject($t[2],$_POST["admin/ev/{$t[2]}/mod"]);}
+                            if($t[3] == "del"){deleteSubject($t[2]);}*/
+                        }
+                }
+                    
                 }
             }
             
