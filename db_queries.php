@@ -188,6 +188,36 @@ function getClassByYear($year){
     }
 
 }
+function deleteSubject($subjectToDelete){
+    global $servername, $username, $password;
+    $kapcsolat = new mysqli($servername, $username, $password, "schoolbook");
+    
+    // Kapcsolat ellenőrzése
+    if ($kapcsolat->connect_error) {
+        die("Kapcsolódási hiba: " . $kapcsolat->connect_error);
+    }
+    
+    
+    // UPDATE parancs előkészítése
+    $sql = "DELETE FROM `subjects`
+WHERE `name` = ?;";
+    
+            
+    
+    // Előkészített parancs használata
+    $stmt = $kapcsolat->prepare($sql);
+    $stmt->bind_param("s",  $subjectToDelete);
+    if ($stmt->execute()) {
+        header("Location: schoolbook.php");
+        echo "<script>alert('Sikeres törlés!');</script>";
+    } else {
+        echo "Hiba történt: " . $kapcsolat->error;
+    }
+    
+    // Kapcsolat lezárása
+    $stmt->close();
+    $kapcsolat->close();
+}
 function deleteYear($yearToDelete){
     global $servername, $username, $password;
     $kapcsolat = new mysqli($servername, $username, $password, "schoolbook");
@@ -229,13 +259,13 @@ function modifySubject($subject, $modifiedSubject){
     
     
     // UPDATE parancs előkészítése
-    $sql = "UPDATE `classes` SET `year` = ? WHERE `year` = ?";
+    $sql = "UPDATE `subjects` SET `name` = ? WHERE `name` = ?";
     
             
     
     // Előkészített parancs használata
     $stmt = $kapcsolat->prepare($sql);
-    $stmt->bind_param("ii", $modifiedYear, $year);
+    $stmt->bind_param("ss", $modifiedSubject, $subject);
     if ($stmt->execute()) {
         header("Location: schoolbook.php");
         echo "<script>alert('Sikeres frissítés!')</script>";

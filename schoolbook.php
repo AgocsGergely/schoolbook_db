@@ -372,27 +372,7 @@ function displayAdminYears($years){
     echo "<div class='classes-section' id='classes-section'></div>";
     echo "<div class='students-section' id='students-section'></div>";
 }
-function displayOptions($prefix,$year){
-    echo "<div class='years-section' id='years-section' style='text-align:center;'>";
-    echo '<form method="POST">
-        <label for="admin/'.$prefix.'/'.$year.'/mod">'.$year.':</label>
-        <input type="number" min="0" id="admin/'.$prefix.'/'.$year.'/mod" name="admin/'.$prefix.'/'.$year.'/mod">
-        <button type="submit">
-  <i class="fa-solid fa-pen-to-square"></i> Mentés
-</button>
 
-      </form>';
-    echo "<form method='POST'>";
-    
-        /*echo "<button type='submit' name='admin/ev/{$year}/mod' class='danger' >Módosítás</button>";*/
-        echo "<button type='submit' name='admin/ev/{$year}/del' class='danger' ><i class='fa-solid fa-trash'></i> Törlés</button>";
-        
-        
-    echo "</form>";
-    echo "</div>";
-    echo "<div class='classes-section' id='classes-section'></div>";
-    echo "<div class='students-section' id='students-section'></div>";
-}
 function displayAddYear(){
     echo "<div class='years-section' id='years-section' style='text-align:center;'>";
     echo '<form method="POST">
@@ -432,6 +412,27 @@ function displayAdminSubjects($subjects){
         echo "<button type='submit' name='admin/tantargy/{$subject['name']}' class='danger' data-year='{$subject['name']}'>{$subject['name']}</button>";
     }
     echo "<button type='submit' name='admin/tantargy/add' class='primary' data-year='{$subject['name']}'><i class='fa-solid fa-folder-plus'></i> Tantárgy hozzáadása</button>";
+    echo "</form>";
+    echo "</div>";
+    echo "<div class='classes-section' id='classes-section'></div>";
+    echo "<div class='students-section' id='students-section'></div>";
+}
+function displayOptions($prefix,$year){
+    echo "<div class='years-section' id='years-section' style='text-align:center;'>";
+    echo '<form method="POST">
+        <label for="admin/'.$prefix.'/'.$year.'/mod">'.$year.':</label>
+        <input type="text" min="0" id="admin/'.$prefix.'/'.$year.'/mod" name="admin/'.$prefix.'/'.$year.'/mod">
+        <button type="submit">
+  <i class="fa-solid fa-pen-to-square"></i> Mentés
+</button>
+
+      </form>';
+    echo "<form method='POST'>";
+    
+        /*echo "<button type='submit' name='admin/ev/{$year}/mod' class='danger' >Módosítás</button>";*/
+        echo "<button type='submit' name='admin/ev/{$year}/del' class='danger' ><i class='fa-solid fa-trash'></i> Törlés</button>";
+        
+        
     echo "</form>";
     echo "</div>";
     echo "<div class='classes-section' id='classes-section'></div>";
@@ -478,8 +479,9 @@ function checkPost(){
                         displayOptions('tantargy',$t[2]);
                         if(isset($t[3])){
                             
-                            /*if($t[3] == "mod"){modifySubject($t[2],$_POST["admin/ev/{$t[2]}/mod"]);}
-                            if($t[3] == "del"){deleteSubject($t[2]);}*/
+                            if($t[3] == "mod"){modifySubject($t[2],$_POST["admin/tantargy/{$t[2]}/mod"]);}
+                            if($t[3] == "del"){deleteSubject($t[2]);}
+                            
                         }
                 }
                     
