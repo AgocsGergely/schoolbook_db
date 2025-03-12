@@ -430,7 +430,7 @@ function displayOptions($prefix,$year){
     echo "<form method='POST'>";
     
         /*echo "<button type='submit' name='admin/ev/{$year}/mod' class='danger' >Módosítás</button>";*/
-        echo "<button type='submit' name='admin/ev/{$year}/del' class='danger' ><i class='fa-solid fa-trash'></i> Törlés</button>";
+        echo "<button type='submit' name='admin/{$prefix}/{$year}/del' class='danger' ><i class='fa-solid fa-trash'></i> Törlés</button>";
         
         
     echo "</form>";

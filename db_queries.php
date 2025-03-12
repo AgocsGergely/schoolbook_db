@@ -188,34 +188,54 @@ function getClassByYear($year){
     }
 
 }
-function deleteSubject($subjectToDelete){
+function deleteSubject($subjectToDelete) {
     global $servername, $username, $password;
     $kapcsolat = new mysqli($servername, $username, $password, "schoolbook");
-    
-    // Kapcsolat ellenőrzése
+
+
     if ($kapcsolat->connect_error) {
         die("Kapcsolódási hiba: " . $kapcsolat->connect_error);
     }
-    
-    
-    // UPDATE parancs előkészítése
-    $sql = "DELETE FROM `subjects`
-WHERE `name` = ?;";
-    
-            
-    
-    // Előkészített parancs használata
-    $stmt = $kapcsolat->prepare($sql);
-    $stmt->bind_param("s",  $subjectToDelete);
-    if ($stmt->execute()) {
-        header("Location: schoolbook.php");
+
+
+    $kapcsolat->begin_transaction();
+
+    try {
+        //Első törlés: grades tábla
+        $sql2 = "
+DELETE FROM `grades` WHERE subject_id = (SELECT subject_id FROM grades g JOIN subjects s ON g.subject_id = s.id WHERE s.name = ? LIMIT 1);";
+        $stmt2 = $kapcsolat->prepare($sql2);
+        if ($stmt2 === false) {
+            throw new Exception("Prepare failed for grades: " . $kapcsolat->error);
+        }
+        $stmt2->bind_param("s", $subjectToDelete);
+        $stmt2->execute();
+        $stmt2->close();
+
+        //Második törlés: subjects tábla
+        $sql1 = "DELETE FROM `subjects` WHERE `name` = ?";
+        $stmt1 = $kapcsolat->prepare($sql1);
+        if ($stmt1 === false) {
+            throw new Exception("Prepare failed for subjects: " . $kapcsolat->error);
+        }
+        $stmt1->bind_param("s", $subjectToDelete);
+        $stmt1->execute();
+        $stmt1->close();
+
+        
+
+        $kapcsolat->commit();
+
+
         echo "<script>alert('Sikeres törlés!');</script>";
-    } else {
-        echo "Hiba történt: " . $kapcsolat->error;
+
+        header("Location: schoolbook.php");
+    } catch (Exception $e) {
+
+        $kapcsolat->rollback();
+        echo "<script>alert('Hiba történt: " . $kapcsolat->error . "');</script>";
     }
-    
-    // Kapcsolat lezárása
-    $stmt->close();
+
     $kapcsolat->close();
 }
 function deleteYear($yearToDelete){
